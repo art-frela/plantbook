@@ -1,0 +1,46 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: plantbook
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: plantbook
+  template:
+    metadata:
+      labels:
+        app: plantbook
+    spec:
+      containers:
+        - image: ghcr.io/kaatinga/plantbook/restapi:latest
+          name: plantbook
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /health/ready
+              port: 8081
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /health/live
+              port: 8081
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+            initialDelaySeconds: 10
+          resources:
+            limits:
+              memory: "10Mi"
+              cpu: "100m"
+          ports:
+            - containerPort: 8081

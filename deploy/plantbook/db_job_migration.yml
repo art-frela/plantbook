@@ -1,0 +1,32 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: database-migrations
+spec:
+  backoffLimit: 5
+  completions: 1
+  ttlSecondsAfterFinished: 100
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: database-migrations
+          image: migrate/migrate:v4.14.1
+          env:
+            - name: REPO_PAT
+              valueFrom:
+                secretKeyRef:
+                  name: github-pat
+                  key: REPO_PAT
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: db-user
+                  key: db_username
+            - name: DB_PWD
+              valueFrom:
+                secretKeyRef:
+                  name: db-pwd
+                  key: db_pwd
+          command: ['/migrate']
+          args: ['-source', 'github://kaatinga:$(REPO-PAT)@kaatinga/plantbook/database/migrations_schema', '-database', 'postgresql://$(DB_USER):$(DB_PWD)@plantbook-testdb:5432/plantbook_admin?sslmode=disable', 'up']

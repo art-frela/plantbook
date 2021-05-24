@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: plantbook
+  labels:
+    app: plantbook
+spec:
+  type: NodePort
+  ports:
+    - port: 8081
+      targetPort: 8081
+      protocol: TCP
+      name: tcp
+  selector:
+    app: plantbook

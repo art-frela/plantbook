@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: plantbook-testdb
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: plantbook-testdb
+  template:
+    metadata:
+      labels:
+        app: plantbook-testdb
+    spec:
+      containers:
+        - image: postgres:13.2
+          env:
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: db-user
+                  key: db_username
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-pwd
+                  key: db_pwd
+            - name: POSTGRES_DB
+              value: plantbook_admin
+            - name: PG_DATA
+              value: /var/lib/pgdata
+          name: plantbook-testdb
+          ports:
+            - containerPort: 5432
