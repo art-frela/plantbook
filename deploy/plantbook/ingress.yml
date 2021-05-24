@@ -4,12 +4,13 @@ metadata:
   name: my-ingress
 spec:
   rules:
-    - http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: plantbook
-                port:
-                  number: 8081
+  - host: "plantbook.icu"
+    http:
+      paths:
+        - path: /
+          pathType: Prefix
+          backend:
+            service:
+              name: plantbook
+              port:
+                number: 8081
